@@ -7,17 +7,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "MarsRouter"
-description = "Custom dynamic router for the Mercury Framework"
-readme = "README.md"
-license = {file = "LICENSE"}
 version = "0.10"
 requires-python = ">=3.8"
 authors = [
-  {name = "Ahsan Ahmed", email = "ahsan.ahmed3246@gmail.com.com"}
+  {name = "Ahsan Ahmed", email = "ahsan.ahmed3246@gmail.com"}
 ]
 maintainers = [
-  {name = "Ahsan Ahmed", email = "ahsan.ahmed3246@gmail.com.com"}
+  {name = "Ahsan Ahmed", email = "ahsan.ahmed3246@gmail.com"}
 ]
+description = "A batteries included web framework written in python"
+readme = "README.md"
+license = {file = "LICENSE"}
 classifiers = [
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
@@ -45,5 +45,5 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/MercuryFramework"
-Repository = "https://github.com/MercuryFramework/MarsRouter"
+Repository = "https://github.com/MarsRouter/"
 "Bug Tracker" = "https://github.com/MercuryFramework/MarsRouter/issues"
