@@ -21,7 +21,7 @@ Usage
 
 Example
 -------
-```python
+```
 router = Router()
 router.add_route('/user/{username}', user_profile)
 result = router.dispatch('/user/john')
