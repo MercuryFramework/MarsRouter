@@ -26,3 +26,4 @@ router = Router()
 router.add_route('/user/{username}', user_profile)
 result = router.dispatch('/user/john')
 # {'controller': user_profile, 'params': {'username': 'john'}}
+```
