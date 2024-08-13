@@ -6,12 +6,11 @@ build-backend = "setuptools.build_meta"
 name = "MarsRouter"
 version = "0.1.0"
 description = "A simple dynamic routing system in Python."
-long-description = file: README.rst
-long-description-content-type = "text/x-rst"
 authors = [
     {name = "Ahsan Ahmed", email = "ahsan.ahmed3246@gmail.com"}
 ]
-license = {text = "MIT"}
+readme = "README.rst"
+license = {file = "LICENSE"}
 dependencies = []
 
 [tool.setuptools]
