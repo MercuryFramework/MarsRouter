@@ -17,6 +17,8 @@ maintainers = [
 ]
 description = "Custom dynamic router for the Mercury Framework"
 readme = "README.md"
+long_description = "README.md"
+long_description_content_type="text/markdown"
 license = {file = "LICENSE"}
 classifiers = [
     "Intended Audience :: Information Technology",
