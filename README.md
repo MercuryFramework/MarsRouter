@@ -11,3 +11,11 @@ interface to handle requests based on these parameters.
 - Simple function-based controllers
 - Flexible parameter extraction
 - Easy integration into existing Python projects
+
+# Usage
+```python3
+router = Router()
+router.add_route('/user/{username}', user_profile)
+result = router.dispatch('/user/john')
+# {'controller': user_profile, 'params': {'username': 'john'}}
+```
