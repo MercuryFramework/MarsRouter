@@ -19,11 +19,12 @@ Usage
 1. Define your routing patterns and associated functions.
 2. Use the router to match URLs and get the corresponding function and parameters.
 
-Example
+Example Usage
 -------
-```
-router = Router()
-router.add_route('/user/{username}', user_profile)
-result = router.dispatch('/user/john')
-# {'controller': user_profile, 'params': {'username': 'john'}}
-```
+.. code-block:: python3
+
+  #Setup the router
+  router = Router()
+  router.add_route('/user/{username}', user_profile)
+  result = router.dispatch('/user/john')
+  # {'controller': user_profile, 'params': {'username': 'john'}}
