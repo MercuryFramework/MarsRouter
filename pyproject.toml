@@ -6,7 +6,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "libmercury"
+name = "MarsRouter"
 description = "Custom dynamic router for the Mercury Framework"
 readme = "README.md"
 license = {file = "LICENSE"}
