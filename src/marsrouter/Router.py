@@ -90,7 +90,7 @@ class Router:
 		# Otherwise, return no matching route found
 		return self._handle_error("no_route", "No matching route found", 404)
 
-
+"""
 # Example controller functions
 def post_details(id):
 	return f"Post details for ID {id}"
@@ -129,4 +129,4 @@ print(result)  # Should return custom invalid method error message
 
 result = router.match('/posts/id/not-a-number', 'GET')
 print(result)  # Should return a type mismatch error
-
+"""
