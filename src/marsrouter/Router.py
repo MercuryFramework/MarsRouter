@@ -12,6 +12,7 @@ class Route:
 		self.pattern = pattern
 		self.controller = controller
 		self.methods = methods or ['GET']
+		self.is_static = not re.search(r'{(\w+)(?::(\w+))?}', pattern)
 		self.regex, self.param_types = self._parse_pattern(pattern)
 
 	def _parse_pattern(self, pattern):
@@ -22,24 +23,30 @@ class Route:
 			param_types[param_name] = self.type_map.get(param_type, str)
 			return f'(?P<{param_name}>[^/]+)'
 
+		if self.is_static:
+			return None, param_types  # No regex needed for static routes
+
 		regex_pattern = re.sub(r'{(\w+)(?::(\w+))?}', replace, pattern)
 		regex = re.compile(f'^{regex_pattern}$')
 		return regex, param_types
 
 	def match_url(self, url):
-		""" Match the URL without checking the method """
-		match = self.regex.match(url)
-		if match:
-			params = match.groupdict()
-			try:
-				for key, value in params.items():
-					# Attempt type conversion
-					params[key] = self.param_types[key](value)
-			except (ValueError, TypeError):
-				# Return a special error for type mismatches
-				return "type_error"
-			return params
-		return None
+		""" Match the URL, returning params if dynamic or a boolean for static routes """
+		if self.is_static:
+			return {} if url == self.pattern else None	# Return empty params if it's a static route match
+		else:
+			match = self.regex.match(url)
+			if match:
+				params = match.groupdict()
+				try:
+					for key, value in params.items():
+						# Attempt type conversion
+						params[key] = self.param_types[key](value)
+				except (ValueError, TypeError):
+					# Return a special error for type mismatches
+					return "type_error"
+				return params
+			return None
 
 	def match_method(self, method):
 		""" Check if the method is valid for this route """
@@ -77,7 +84,7 @@ class Router:
 			params = route.match_url(url)
 			if params == "type_error":
 				return self._handle_error("type_mismatch", f"Type mismatch in route {route.pattern}", 400)
-			elif params:
+			elif params is not None:  # Match found for static or dynamic routes
 				matching_route = route
 				# If the method matches, return the controller and params
 				if route.match_method(method):
@@ -98,14 +105,8 @@ class Router:
 
 """
 # Example controller functions
-def post_details(id):
-	return f"Post details for ID {id}"
-
-def create_post():
-	return "Post created"
-
-def user_profile(username):
-	return f"Profile page for {username}"
+def post_details(id=None):
+	return f"Post details for ID {id}" if id else "Static page"
 
 # Example of custom error handler
 def my_invalid_method_handler():
@@ -118,8 +119,9 @@ def my_type_mismatch_handler():
 # Setting up the router and routes
 router = Router()
 router.add_route('/posts/id/{id:int}', post_details, methods=['GET'])
-router.add_route('/posts/id/{id:int}', create_post, methods=['POST'])
-router.add_route('/user/{username}', user_profile, methods=['GET'])
+router.add_route('/posts/id/{id:int}', post_details, methods=['POST'])
+router.add_route('/user/{username}', post_details, methods=['GET'])
+router.add_route('/register', post_details, methods=['GET'])  # Static route
 
 # Adding custom error handlers
 router.add_error_handler("invalid_method", my_invalid_method_handler)
@@ -135,8 +137,8 @@ print(result)  # Should match the POST route and return controller and params
 result = router.match('/user/johndoe', 'GET')
 print(result)  # Should match the GET route and return controller and params
 
-result = router.match('/user/johndoe', 'POST')
-print(result)  # Should return custom invalid method error message
+result = router.match('/register', 'GET')
+print(result)  # Should return the static page result
 
 result = router.match('/posts/id/not-a-number', 'GET')
 print(result)  # Should return custom type mismatch error message
