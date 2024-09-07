@@ -33,9 +33,11 @@ class Route:
 			params = match.groupdict()
 			try:
 				for key, value in params.items():
+					# Attempt type conversion
 					params[key] = self.param_types[key](value)
 			except (ValueError, TypeError):
-				return None
+				# Return a special error for type mismatches
+				return "type_error"
 			return params
 		return None
 
@@ -68,29 +70,33 @@ class Router:
 	@lru_cache(maxsize=100)
 	def match(self, url, method):
 		matching_route = None
+		method_mismatch = False
 
 		# First, try to find a matching route based on URL
 		for route in self.routes:
 			params = route.match_url(url)
-			if params:
+			if params == "type_error":
+				return self._handle_error("type_mismatch", f"Type mismatch in route {route.pattern}", 400)
+			elif params:
 				matching_route = route
-				# If the method also matches, return success
+				# If the method matches, return the controller and params
 				if route.match_method(method):
 					return {
 						"controller": route.controller,
 						"params": params,
 						"status_code": 200
 					}
-				break  # Found the route, no need to continue
+				# If the URL matches but the method doesn't, set method_mismatch
+				method_mismatch = True
 
-		# If a matching route was found but method is wrong, handle invalid method
-		if matching_route:
+		# If a matching route was found but the method was wrong, return 405
+		if matching_route and method_mismatch:
 			return self._handle_error("invalid_method", "Invalid method", 405)
 
 		# Otherwise, return no matching route found
 		return self._handle_error("no_route", "No matching route found", 404)
 
-"""
+
 # Example controller functions
 def post_details(id):
 	return f"Post details for ID {id}"
@@ -105,14 +111,19 @@ def user_profile(username):
 def my_invalid_method_handler():
 	return "Custom invalid method error message"
 
+# Example of custom type mismatch handler
+def my_type_mismatch_handler():
+	return "Custom type mismatch error message"
+
 # Setting up the router and routes
 router = Router()
 router.add_route('/posts/id/{id:int}', post_details, methods=['GET'])
 router.add_route('/posts/id/{id:int}', create_post, methods=['POST'])
 router.add_route('/user/{username}', user_profile, methods=['GET'])
 
-# Adding custom error handler
+# Adding custom error handlers
 router.add_error_handler("invalid_method", my_invalid_method_handler)
+router.add_error_handler("type_mismatch", my_type_mismatch_handler)
 
 # Matching URLs with methods
 result = router.match('/posts/id/123', 'GET')
@@ -128,5 +139,5 @@ result = router.match('/user/johndoe', 'POST')
 print(result)  # Should return custom invalid method error message
 
 result = router.match('/posts/id/not-a-number', 'GET')
-print(result)  # Should return a type mismatch error
-"""
+print(result)  # Should return custom type mismatch error message
+
